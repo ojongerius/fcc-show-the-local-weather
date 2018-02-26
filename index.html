@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Show the local weather </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #d47d6e;">
+        <!-- TODO: change navbar color based on temp -->
+        <a class="navbar-brand" href="https://github.com/ojongerius/fcc-home" aria-hidden="true" aria-label="Link to freeCodeCamp projects"
+        ><i class="fa fa-mail-reply"></i></a>
+        <span style="color: white"><em>Your weather today..</em></span>
+    </nav>
+</div>
+<div class="container" style="padding-top: 5rem;">
+    <div class="alert alert-light text-center">
+        <span id="output"></span>
+        <br>
+        <button type="button" class="btn btn-sm btn-info" id="convert">Convert between Celcius and Fahrenheit</button>
+    </div>
+</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+$(document).ready(function () {
+    const temp = {};
+    const output = document.getElementById("output");
+
+
+    if (!navigator.geolocation){
+        output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+        return;
+    }
+
+    function geoSuccess(position) {
+        const latitude  = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        $.getJSON("https://fcc-weather-api.glitch.me/api/current?lat=" + latitude + "&lon=" + longitude).then(function (data) {
+            temp.type = "C";
+            temp.value = data["main"]["temp"];
+            $("#output").html("<span id='tempValue'>" + temp.value +
+                "</span><span id='tempType'>" + temp.type + "</span> with <span id='description'>" +
+            data['weather'][0]['description'] + "</span><br><img alt='an icon of the weather' src='" + data['weather'][0]['icon'] +
+            "'/>");
+
+            $("#convert").click(function() {
+                if (temp.type === "C") {
+                    temp.type = "F";
+                    temp.value = (temp.value * 9) / 5 + 32;
+                } else {
+                    temp.type = "C";
+                    temp.value = ((temp.value - 32) * 5) / 9 ;
+                }
+                $("#tempType").text(temp.type);
+                $("#tempValue").text(temp.value);
+            })
+        });
+    };
+
+    function geoError() {
+        output.innerHTML = "Unable to retrieve your location";
+    }
+
+    output.innerHTML = "<p>Finding your location...</p>"; // TODO: a spinner would be nice
+
+    navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+    });
+</script>
+</html>
