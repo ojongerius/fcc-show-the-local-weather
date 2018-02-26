@@ -61,7 +61,7 @@ $(document).ready(function () {
     };
 
     function geoError() {
-        output.innerHTML = "Unable to retrieve your location";
+        output.innerHTML = "Unable to retrieve your location, are you using http instead of https?";
     }
 
     output.innerHTML = "<p>Finding your location...</p>"; // TODO: a spinner would be nice
